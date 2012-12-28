@@ -28,7 +28,7 @@ void testApp::draw(){
 	}
 	ofSetRectMode(OF_RECTMODE_CORNER);
 	
-	touches.draw(); //overlay debug sstuff
+	touches.draw(); //overlay debug stuff
 }
 
 
