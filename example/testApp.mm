@@ -29,6 +29,10 @@ void testApp::draw(){
 	ofSetRectMode(OF_RECTMODE_CORNER);
 	
 	touches.draw(); //overlay debug stuff
+
+	ofSetColor(ofColor::red);
+	ofDrawBitmapString( "time since last TouchUp: " + ofToString( touches.getTimeSinceLastUpEvent(),1) + "sec", 30, 30);
+	ofDrawBitmapString( "time since last TouchDown: " + ofToString( touches.getTimeSinceLastDownEvent(),1) + "sec" , 30, 45);
 }
 
 

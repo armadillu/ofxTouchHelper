@@ -32,6 +32,7 @@ class ofxTouchHelper{
 			touch[i].duration = 0.0f;
 			touch[i].speed = 0.0f;
 		}
+		timeSinceLastDownEvent = timeSinceLastUpEvent = 0.0f;
 	}
 
 
@@ -46,6 +47,8 @@ class ofxTouchHelper{
 				touch[i].speed = 0.0f;
 			}
 		}
+		timeSinceLastDownEvent += dt;
+		timeSinceLastUpEvent += dt;
 	}
 
 
@@ -71,6 +74,7 @@ class ofxTouchHelper{
 
 
 	void touchDown(ofTouchEventArgs &t){
+		timeSinceLastDownEvent = 0.0f;
 		touch[t.id].duration = 0.0f;
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
@@ -87,6 +91,7 @@ class ofxTouchHelper{
 
 
 	void touchUp(ofTouchEventArgs &t){
+		timeSinceLastUpEvent = 0.0f;
 		touch[t.id].down = false;
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
@@ -113,6 +118,17 @@ class ofxTouchHelper{
 		return t;
 	}
 
+
+	float getTimeSinceLastUpEvent(){
+		return timeSinceLastUpEvent;
+	}
+
+
+	float getTimeSinceLastDownEvent(){
+		return timeSinceLastDownEvent;
+	}
+
+
 	int getNumTouches(){
 
 		int touchDown = 0;
@@ -125,9 +141,10 @@ class ofxTouchHelper{
 	}
 
 
+	float timeSinceLastDownEvent;
+	float timeSinceLastUpEvent;
 	TouchUnit touch[MAX_TOUCHES];
 
 };
-
 
 #endif
