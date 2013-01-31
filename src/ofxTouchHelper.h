@@ -12,21 +12,30 @@
 #include "ofMain.h"
 
 #define	MAX_TOUCHES		12
-
+#define SPEED_SMOOTH_RATIO	0.5f
 class ofxTouchHelper{
 
 	public:
 
 	struct TouchUnit{
+		TouchUnit(){
+			doubleTap = false;
+			speed = 0.0f;
+			down = false;
+			duration = 0.0f;
+		}
+		bool doubleTap;
 		bool down;
 		float duration;
 		ofVec2f pos;
 		ofVec2f prevPos;
+		ofVec2f smoothSpeed;
 		float speed;
 	};
 
 
 	void setup(){
+		debug = false;
 		for (int i = 0; i < MAX_TOUCHES; i++){
 			touch[i].down = false;
 			touch[i].duration = 0.0f;
@@ -40,10 +49,11 @@ class ofxTouchHelper{
 		for (int i = 0; i < MAX_TOUCHES; i++){
 			if( touch[i].down ){
 				touch[i].duration += dt;
-				touch[i].speed = ( touch[i].pos - touch[i].prevPos ).length() / dt;
+				touch[i].speed = (1.0f-SPEED_SMOOTH_RATIO) * touch[i].speed + SPEED_SMOOTH_RATIO * ( touch[i].pos - touch[i].prevPos ).length() / dt;
+				touch[i].smoothSpeed = (1.0f-SPEED_SMOOTH_RATIO) * touch[i].smoothSpeed + SPEED_SMOOTH_RATIO * ( touch[i].pos - touch[i].prevPos ) / dt;
 				touch[i].prevPos = touch[i].pos;
-
 			}else{
+				touch[i].smoothSpeed *= 0.5;
 				touch[i].speed = 0.0f;
 			}
 		}
@@ -59,9 +69,14 @@ class ofxTouchHelper{
 				ofSetColor(255,32);
 				ofCircle(touch[i].pos, 40);
 				ofNoFill();
-				ofSetColor(64);
+				ofSetColor(96);
 				ofCircle(touch[i].pos, 40);
+				if (touch[i].doubleTap){
+					ofSetColor(96);
+					ofCircle(touch[i].pos, 47);
+				}
 				ofSetColor(255,64);
+
 				ofDrawBitmapString( "#" + ofToString(i), touch[i].pos + ofVec2f(-10,-50));
 				ofDrawBitmapString( "pos: " + ofToString(touch[i].pos), touch[i].pos + ofVec2f(50,-14));
 				ofDrawBitmapString( "duration: " + ofToString(touch[i].duration,1) + " sec", touch[i].pos + ofVec2f(50,0));
@@ -70,12 +85,15 @@ class ofxTouchHelper{
 				ofDrawBitmapString( aux, touch[i].pos + ofVec2f(50,14));
 			}
 		}
+		ofFill();
 	}
 
 
 	void touchDown(ofTouchEventArgs &t){
+		if(debug) printf("touchDown %d\n", t.id);
 		timeSinceLastDownEvent = 0.0f;
 		touch[t.id].duration = 0.0f;
+		//touch[t.id].doubleTap = false;
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
 		touch[t.id].prevPos = touch[t.id].pos;
@@ -84,6 +102,7 @@ class ofxTouchHelper{
 
 
 	void touchMoved(ofTouchEventArgs &t){
+		if(debug) printf("touchMoved %d\n", t.id);
 		if ( touch[t.id].down == false) return;
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
@@ -91,13 +110,27 @@ class ofxTouchHelper{
 
 
 	void touchUp(ofTouchEventArgs &t){
+		if(debug) printf("touchUp %d\n", t.id);
 		timeSinceLastUpEvent = 0.0f;
+		touch[t.id].doubleTap = false;
 		touch[t.id].down = false;
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
 		touch[t.id].duration = 0.0f;
 	};
 
+	void touchDoubleTap(ofTouchEventArgs &t){
+		if(debug) printf("touchDoubleTap %d\n", t.id);
+		timeSinceLastUpEvent = 0.0f;
+		touch[t.id].down = true;
+		touch[t.id].doubleTap = true;
+		touch[t.id].pos.x = t.x;
+		touch[t.id].pos.y = t.y;
+		touch[t.id].duration = 0.0f;
+	}
+
+	void touchCancelled(ofTouchEventArgs & touch){
+	}
 
 	TouchUnit* getTouchWithID(int ID){
 
@@ -118,6 +151,7 @@ class ofxTouchHelper{
 		return t;
 	}
 
+	void setVerbose(bool v){ debug = v;}
 
 	float getTimeSinceLastUpEvent(){
 		return timeSinceLastUpEvent;
@@ -144,6 +178,7 @@ class ofxTouchHelper{
 	float timeSinceLastDownEvent;
 	float timeSinceLastUpEvent;
 	TouchUnit touch[MAX_TOUCHES];
+	bool debug;
 
 };
 
