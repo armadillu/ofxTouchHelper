@@ -21,7 +21,7 @@ class ofxTouchHelper{
 		TouchUnit(){
 			doubleTap = false;
 			speed = 0.0f;
-			down = false;
+			down = extra = false;
 			duration = 0.0f;
 		}
 		bool doubleTap;
@@ -31,6 +31,7 @@ class ofxTouchHelper{
 		ofVec2f prevPos;
 		ofVec2f smoothSpeed;
 		float speed;
+		bool extra;
 	};
 
 
@@ -69,7 +70,11 @@ class ofxTouchHelper{
 				ofSetColor(255,32);
 				ofCircle(touch[i].pos, 40);
 				ofNoFill();
-				ofSetColor(96);
+				if (touch[i].extra)
+					ofSetColor(96,0,0);
+				else
+					ofSetColor(96);
+
 				ofCircle(touch[i].pos, 40);
 				if (touch[i].doubleTap){
 					ofSetColor(96);
