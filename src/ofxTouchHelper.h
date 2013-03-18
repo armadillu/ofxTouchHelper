@@ -10,12 +10,22 @@
 #define ofxTouchHelper_h
 
 #include "ofMain.h"
+#include "TouchAnimation.h"
 
 #define	MAX_TOUCHES		12
 #define SPEED_SMOOTH_RATIO	0.5f
+
+
+
 class ofxTouchHelper{
 
 	public:
+
+	enum TouchStyle{ T_DOWN, T_UP, T_DOUBLE_TAP  };
+	struct TouchAnim{
+		ofVec2f pos;
+		float life;
+	};
 
 	struct TouchUnit{
 		TouchUnit(){
@@ -43,10 +53,17 @@ class ofxTouchHelper{
 			touch[i].speed = 0.0f;
 		}
 		timeSinceLastDownEvent = timeSinceLastUpEvent = 0.0f;
+		touchCircle.loadImage("touchCircle.png");
+		hand.loadImage("hand.png");
+		hand2.loadImage("hand2.png");
+		touchAnims.setup();
 	}
 
 
 	void update(float dt){
+
+		touchAnims.update(dt);
+
 		for (int i = 0; i < MAX_TOUCHES; i++){
 			if( touch[i].down ){
 				touch[i].duration += dt;
@@ -62,8 +79,26 @@ class ofxTouchHelper{
 		timeSinceLastUpEvent += dt;
 	}
 
+	void drawPretty(){
 
-	void draw(){
+		ofSetRectMode(OF_RECTMODE_CENTER);
+		touchAnims.draw(hand);
+
+		ofSetColor(255,128);
+		for (int i = 0; i < MAX_TOUCHES; i++){
+			if( touch[i].down ){
+				ofSetColor(255, 128 * ofClamp( 2 * touch[i].duration, 0, 1 ) );
+				if (touch[i].doubleTap){
+					hand2.draw(touch[i].pos);
+				}else{
+					hand.draw(touch[i].pos);
+				}
+
+			}
+		}
+	}
+	
+	void drawDebug(){
 		for (int i = 0; i < MAX_TOUCHES; i++){
 			if( touch[i].down ){
 				ofFill();
@@ -103,6 +138,7 @@ class ofxTouchHelper{
 		touch[t.id].pos.y = t.y;
 		touch[t.id].prevPos = touch[t.id].pos;
 		touch[t.id].down = true;
+		touchAnims.addTouch(t.x, t.y, TouchAnimation::T_SINGLE);
 	}
 
 
@@ -122,6 +158,7 @@ class ofxTouchHelper{
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
 		touch[t.id].duration = 0.0f;
+		touchAnims.addTouch(t.x, t.y, TouchAnimation::T_UP);
 	};
 
 	void touchDoubleTap(ofTouchEventArgs &t){
@@ -132,6 +169,7 @@ class ofxTouchHelper{
 		touch[t.id].pos.x = t.x;
 		touch[t.id].pos.y = t.y;
 		touch[t.id].duration = 0.0f;
+		touchAnims.addTouch(t.x, t.y, TouchAnimation::T_DOUBLE);
 	}
 
 	void touchCancelled(ofTouchEventArgs & touch){
@@ -179,11 +217,17 @@ class ofxTouchHelper{
 		return touchDown;
 	}
 
+private:
 
-	float timeSinceLastDownEvent;
-	float timeSinceLastUpEvent;
-	TouchUnit touch[MAX_TOUCHES];
-	bool debug;
+	float					timeSinceLastDownEvent;
+	float					timeSinceLastUpEvent;
+	TouchUnit				touch[MAX_TOUCHES];
+	bool					debug;
+
+	ofImage					touchCircle;
+	ofImage					hand;
+	ofImage					hand2;
+	TouchAnimation			touchAnims;
 
 };
 

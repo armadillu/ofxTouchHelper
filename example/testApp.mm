@@ -7,12 +7,10 @@ void testApp::setup(){
 	ofSetFrameRate(60);
 	ofEnableAlphaBlending();
 	touches.setup();
-
 }
 
 
 void testApp::update(){
-
 	float dt = 1./60.;
 	touches.update(dt);
 }
@@ -24,11 +22,11 @@ void testApp::draw(){
 	ofSetRectMode(OF_RECTMODE_CENTER);
 	ofSetColor(ofColor::red);
 	for(int i = 0 ; i < t.size(); i++){
-		ofCircle(t[i].pos, 40.0f + fmodf(t[i].duration * 50.0f, 15.0f) );
+	//	ofCircle(t[i].pos, 40.0f + fmodf(t[i].duration * 50.0f, 15.0f) );
 	}
 	ofSetRectMode(OF_RECTMODE_CORNER);
 	
-	touches.draw(); //overlay debug stuff
+	touches.drawPretty(); //overlay debug stuff
 
 	ofSetColor(ofColor::red);
 	ofDrawBitmapString( "time since last TouchUp: " + ofToString( touches.getTimeSinceLastUpEvent(),1) + "sec", 30, 30);
@@ -49,3 +47,7 @@ void testApp::touchMoved(ofTouchEventArgs &t){
 void testApp::touchUp(ofTouchEventArgs &t){
 	touches.touchUp(t);
 }
+
+void testApp::touchDoubleTap(ofTouchEventArgs &t){
+	touches.touchDoubleTap(t);
+};
