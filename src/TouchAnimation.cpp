@@ -10,6 +10,10 @@
 
 #include "TouchAnimation.h"
 
+#ifdef TARGET_WIN32
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif
 
 void TouchAnimation::setup(){
 	touchImage.loadImage("touchCircle.png");
