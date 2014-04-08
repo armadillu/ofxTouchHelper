@@ -30,7 +30,7 @@ public:
 	void setup();
 	void update(float dt);
 	void addTouch(float x, float y, TouchType type);
-	void draw(ofImage & hand);
+	void draw(ofImage & hand, bool drawHand);
 
 	ofImage touchImage;
 	ofImage touchImage2;

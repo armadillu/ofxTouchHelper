@@ -53,9 +53,9 @@ class ofxTouchHelper{
 			touch[i].speed = 0.0f;
 		}
 		timeSinceLastDownEvent = timeSinceLastUpEvent = 0.0f;
-		touchCircle.loadImage("touchCircle.png");
-		hand.loadImage("hand.png");
-		hand2.loadImage("hand2.png");
+		touchCircle.loadImage("images/touchCircle.png");
+		hand.loadImage("images/hand.png");
+		hand2.loadImage("images/hand2.png");
 		touchAnims.setup();
 	}
 
@@ -79,21 +79,23 @@ class ofxTouchHelper{
 		timeSinceLastUpEvent += dt;
 	}
 
-	void drawPretty(){
+	void drawPretty(bool drawHand = true){
 
-		ofSetRectMode(OF_RECTMODE_CENTER);
-		touchAnims.draw(hand);
+		//ofSetRectMode(OF_RECTMODE_CENTER);
+		touchAnims.draw(hand, drawHand);
 
-		ofSetColor(255,128);
-		for (int i = 0; i < MAX_TOUCHES; i++){
-			if( touch[i].down ){
-				ofSetColor(255, 128 * ofClamp( 2 * touch[i].duration, 0, 1 ) );
-				if (touch[i].doubleTap){
-					hand2.draw(touch[i].pos);
-				}else{
-					hand.draw(touch[i].pos);
+		if(drawHand){
+			ofSetColor(255,128);
+			for (int i = 0; i < MAX_TOUCHES; i++){
+				if( touch[i].down ){
+					ofSetColor(255, 128 * ofClamp( 2 * touch[i].duration, 0, 1 ) );
+					if (touch[i].doubleTap){
+						hand2.draw(touch[i].pos.x - hand2.getWidth() * 0.5, touch[i].pos.y - hand2.getWidth() * 0.5 );
+					}else{
+						hand.draw(touch[i].pos.x - hand.getWidth() * 0.5, touch[i].pos.y - hand.getHeight() * 0.5);
+					}
+
 				}
-
 			}
 		}
 	}

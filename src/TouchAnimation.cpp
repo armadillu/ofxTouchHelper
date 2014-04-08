@@ -16,8 +16,8 @@
 #endif
 
 void TouchAnimation::setup(){
-	touchImage.loadImage("touchCircle.png");
-	touchImage2.loadImage("touchCircle2.png");
+	touchImage.loadImage("images/touchCircle.png");
+	touchImage2.loadImage("images/touchCircle2.png");
 }
 
 
@@ -48,9 +48,9 @@ void TouchAnimation::addTouch(float x, float y, TouchType type){
 }
 
 
-void TouchAnimation::draw(ofImage & hand){
+void TouchAnimation::draw(ofImage & hand, bool drawHand){
 
-	ofSetRectMode(OF_RECTMODE_CENTER);
+	//ofSetRectMode(OF_RECTMODE_CENTER);
 	for (int i = 0; i < touches.size(); i++){
 		touch t = touches[i];
 		ofVec2f p = touches[i].pos;
@@ -67,11 +67,11 @@ void TouchAnimation::draw(ofImage & hand){
 		switch (touches[i].type) {
 			case T_SINGLE:
 				ofSetColor(255, alpha * 128);
-				touchImage.draw(p.x, p.y, radius, radius);
+				touchImage.draw(p.x - radius * 0.5, p.y - radius * 0.5, radius, radius);
 				break;
 			case T_DOUBLE:
 				ofSetColor(255, alpha * 128);
-				touchImage2.draw(p.x, p.y, radius, radius);
+				touchImage2.draw(p.x - radius * 0.5, p.y - radius * 0.5, radius, radius);
 				break;
 			case T_UP:
 				if (lifePercent < 0.5){
@@ -79,7 +79,7 @@ void TouchAnimation::draw(ofImage & hand){
 				}else{
 					ofSetColor(255, (1 - lifePercent) * 128 );
 				}
-				hand.draw(p.x, p.y);
+				if(drawHand) hand.draw(p.x - hand.getWidth() * 0.5, p.y - hand.getHeight() * 0.5);
 				break;
 
 		}
